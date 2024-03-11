@@ -1,17 +1,19 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
-
+import re
 
 def select_folder():
     folder = filedialog.askdirectory()
     if folder:
         rename_files(folder)
 
+def natural_sort_key(s):
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
 
 def rename_files(folder):
     arq_list = os.listdir(folder)
-    arq_list.sort()
+    arq_list.sort(key = natural_sort_key)
 
     default_paths = {}
 
@@ -24,12 +26,10 @@ def rename_files(folder):
 
     show_alert(default_paths)
 
-
 def undo_renaming(default_paths):
     for new_path, default_path in default_paths.items():
         os.rename(new_path, default_path)
     messagebox.showinfo("Renaming Undone", "Rename successed undone!")
-
 
 def show_alert(default_paths):
     resp = messagebox.askquestion(
@@ -37,7 +37,6 @@ def show_alert(default_paths):
     if resp == "yes":
         undo_renaming(default_paths)
     root.destroy()
-
 
 root = tk.Tk()
 root.title("Renaming png files")
@@ -52,7 +51,7 @@ y = (screen_height - window_height) // 2
 
 root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-botao = tk.Button(root, text="Select local folder", command=select_folder)
-botao.place(relx=0.5, rely=0.5, anchor="center")
+botao = tk.Button(root, text = "Select local folder", command = select_folder)
+botao.place(relx = 0.5, rely = 0.5, anchor = "center")
 
 root.mainloop()
